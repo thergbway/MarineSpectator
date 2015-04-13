@@ -1,0 +1,107 @@
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        html { height: 100% }
+        body { height: 100%; margin: 0px; padding: 0px }
+        #map_canvas { height: 100%; background-color: #666970; }
+    </style>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false">
+    </script>
+    <script type="text/javascript">
+        var isShown = false;
+        function initialize() {
+            var latlng = new google.maps.LatLng(37.39822, -121.9643936);
+            var myOptions = {
+                zoom: 14,
+                center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                mapTypeControl: false,
+                navigationControl: false,
+                streetViewControl: false,
+                backgroundColor: "#666970"
+            };
+
+            document.geocoder = new google.maps.Geocoder();
+            document.map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+
+            document.zoomIn = function zoomIn() {
+                var zoomLevel = document.map.getZoom();
+                if (zoomLevel <= 20) document.map.setZoom(zoomLevel + 1);
+
+            }
+
+            document.zoomOut = function zoomOut() {
+                var zoomLevel = document.map.getZoom();
+                if (zoomLevel > 0) document.map.setZoom(zoomLevel - 1);
+            }
+
+            document.setMapTypeRoad = function setMapTypeRoad() {
+                document.map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+            }
+            document.setMapTypeSatellite = function setMapTypeSatellite() {
+                document.map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+            }
+            document.setMapTypeHybrid = function setMapTypeHybrid() {
+                document.map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+            }
+            document.setMapTypeTerrain = function setMapTypeTerrain() {
+                document.map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+            }
+
+            document.goToLocation = function goToLocation(searchString) {
+                document.geocoder.geocode( {'address': searchString}, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        document.map.setCenter(results[0].geometry.location);
+                    } else {
+                        alert("Geocode was not successful for the following reason: " + status);
+                    }
+                });
+            }
+
+            var shipMarker = new google.maps.Marker({
+                map: document.map,
+                position: new google.maps.LatLng(parseFloat(37.39822), parseFloat(-121.9643936)),
+//                icon: "http://fc00.deviantart.net/fs71/f/2015/024/2/2/pixel_1___ship_by_labradoodledoo-d8f81u0.png"
+//                icon: "ship.png",
+                title: "ship!"
+            });
+
+
+            google.maps.event.addListener(shipMarker, 'click', function() {
+                if(!isShown) {
+                    var contentString = '<div id="balloon">wow</div>';
+                    var infowindow = new google.maps.InfoWindow({
+                        content: contentString
+                    });
+                    google.maps.event.addListener(infowindow, 'closeclick', function(){
+                        isShown = false;
+                    })
+                    infowindow.open(document.map, shipMarker);
+                    isShown = true;
+                }
+            });
+
+            new google.maps.Marker({
+                map: document.map,
+                position: new google.maps.LatLng(parseFloat(37.39422), parseFloat(-121.9643936))
+            });
+
+            /*var lat = 37.39822;
+            var lng = -121.9643936;
+            var point = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
+            new google.maps.Marker({
+                position: point,
+                map: document.map
+            })*/
+        }
+
+        function addMarker(){
+            document.map.add();
+        }
+    </script>
+</head>
+<body onload="initialize()">
+<div id="map_canvas" style="width:100%; height:100%"></div>
+</body>
+</html>
